@@ -75,8 +75,6 @@
               documentSets[x] = documents.results;
               if(Object.keys(documentSets).length == Object.keys(conf.bindings).length) { 
 
-                console.log(maybeRef || Api.master())
-                
                 documentSets.loggedIn = !!conf.accessToken;
                 documentSets.refs = Api.data.refs;
                 documentSets.ref = maybeRef || Api.master();
