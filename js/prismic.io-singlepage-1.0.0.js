@@ -1,4 +1,4 @@
-(function(GLOBAL) {
+(function(GLOBAL, notifyRendered) {
   
   var conf = GLOBAL.prismicSinglePage || {};
   GLOBAL.prismicSinglePage = conf;
@@ -92,6 +92,13 @@
                   update(e.target.value)
                 });
 
+                var imageSrc = document.querySelectorAll('img[data-src]');
+                for(var i=0; i<imageSrc.length; i++) {
+                  imageSrc[i].setAttribute('src', imageSrc[i].attributes['data-src'].value);
+                }
+
+                if(notifyRendered) setTimeout(notifyRendered, 0);
+
                 if(cb) cb();
               }
             }
@@ -124,5 +131,11 @@
     render();
   }
 
-})(window);
+})(window, function() {
+
+  var e = document.createEvent("HTMLEvents");
+  e.initEvent("prismic:rendered", true, true);
+  document.dispatchEvent(e);
+
+});
 
