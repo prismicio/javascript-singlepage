@@ -44,7 +44,7 @@
       var node = queryScripts[i];
       conf.bindings[node.dataset['binding'] || ""] = {
         form: node.dataset['form'] || 'everything',
-        predicates: node.innerText
+        predicates: node.textContent
       };
       node.parentNode.removeChild(node);
     }
