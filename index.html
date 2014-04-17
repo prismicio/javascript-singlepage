@@ -28,7 +28,13 @@
 
       <div>
           <h2>[%= product.getText('product.name') %]</h2>
-          <img src="[%= product.getImageView('product.image', 'icon').url %]">
+          <!--
+            The “src” attribute will be automatically populated using the content
+            of the “data-src” attribute _after_ the generation.
+            This hack is made to avoid browser to try loading the image at a bad
+            url (the query).
+          -->
+          <img data-src="[%= product.getImageView('product.image', 'icon').url %]">
       </div>
 
     [% }) %]
