@@ -1,5 +1,5 @@
 (function(GLOBAL, notifyRendered) {
-  
+
   var conf = GLOBAL.prismicSinglePage || {};
   GLOBAL.prismicSinglePage = conf;
 
@@ -19,7 +19,7 @@
       if(maybeAccessToken) {
         sessionStorage.setItem('ACCESS_TOKEN', maybeAccessToken);
         document.location.hash = '';
-      };
+      }
     }
 
     // AccessToken
@@ -27,25 +27,24 @@
 
     // The Prismic.io API endpoint
     try {
-      conf.api = document.querySelectorAll('head meta[name="prismic-api"]')[0]['content'];      
+      conf.api = document.querySelectorAll('head meta[name="prismic-api"]')[0]['content'];
     } catch(e) {
       console.error('Please define your api endpoint in the <head> element. For example: <meta name="prismic-api" content="https://lesbonneschoses.prismic.io/api">'); return;
     }
 
     // OAuth client id (optional)
     try {
-      conf.clientId = document.querySelectorAll('head meta[name="prismic-oauth-client-id"]')[0]['content'];      
+      conf.clientId = document.querySelectorAll('head meta[name="prismic-oauth-client-id"]')[0]['content'];
     } catch(e) {}
-    
+
     // Extract the bindings
     conf.bindings = {};
     var queryScripts = document.querySelectorAll('script[type="text/prismic-query"]');
     for(var i=0; i<queryScripts.length; i++) {
       var node = queryScripts[i];
-      var txt = node.innerText;
       conf.bindings[node.dataset['binding'] || ""] = {
         form: node.dataset['form'] || 'everything',
-        predicates: node.innerText
+        predicates: node.textContent
       };
       node.parentNode.removeChild(node);
     }
@@ -63,17 +62,17 @@
   var render = function(maybeRef, cb) {
     Prismic.Api(conf.api, function(err, Api) {
       if (err) { console.log("Error while fetching Api at %s", conf.api, err); return; }
-      
+
       var documentSets = {};
 
-      for(binding in conf.bindings) {
+      for(var binding in conf.bindings) {
         Api.form(conf.bindings[binding].form).ref(maybeRef || Api.master()).query(conf.bindings[binding].predicates).submit(
           function() {
             var x = binding;
             return function(err, documents) {
               if (err) { console.log("Error while running query: \n%s\n", conf.bindings[x].predicates, err); return; }
               documentSets[x] = documents.results;
-              if(Object.keys(documentSets).length == Object.keys(conf.bindings).length) { 
+              if(Object.keys(documentSets).length == Object.keys(conf.bindings).length) {
 
                 documentSets.loggedIn = !!conf.accessToken;
                 documentSets.refs = Api.data.refs;
@@ -89,7 +88,7 @@
 
                 var maybeUpdateButton = document.querySelectorAll('[data-prismic-action="update"]')[0];
                 if(maybeUpdateButton) maybeUpdateButton.addEventListener("change", function(e) {
-                  update(e.target.value)
+                  update(e.target.value);
                 });
 
                 var imageSrc = document.querySelectorAll('img[data-src]');
@@ -101,35 +100,35 @@
 
                 if(cb) cb();
               }
-            }
+            };
           }()
         );
       }
 
     }, conf.accessToken);
-    
-  }
+
+  };
 
   var update = function(ref) {
     render(ref);
-  }
+  };
 
   var signin = function() {
     Prismic.Api(conf.api, function(err, Api) {
       document.location =
-       Api.data.oauthInitiate + 
+       Api.data.oauthInitiate +
        '?response_type=token' +
        '&client_id=' + encodeURIComponent(conf.clientId) +
        '&redirect_uri=' + encodeURIComponent(document.location.href.replace(/#.*/, '') + '') +
        '&scope=' + encodeURIComponent('master+releases');
     });
-  }
+  };
 
   var signout = function() {
     sessionStorage.removeItem('ACCESS_TOKEN');
     conf.accessToken = undefined;
     render();
-  }
+  };
 
 })(window, function() {
 
