@@ -1,5 +1,7 @@
 # JavaScript prismic.io single-page framework
 
+## Warning: this project is no longer maintained, and stays here only for archive purpose. It doesn't implement the most recent features offered by Prismic.io. Use [Baked.js](https://github.com/prismicio/baked.js) instead.
+
 The JavaScript prismic.io single-page framework allows you to make a website with manageable content, using nothing but HTML.
 
 ## Getting started
